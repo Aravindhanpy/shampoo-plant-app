@@ -9,9 +9,8 @@ const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
-// Operators use one shared password. The email is only an internal Supabase Auth
-// identity and is never shown to operators.
-const SHARED_OPERATOR_EMAIL = 'operator@shampoo-plant.local';
+// Operators use one shared password. The email is only used internally by Supabase Auth.
+const SHARED_OPERATOR_EMAIL = 'aravindhan090804@gmail.com';
 
 function Login({ onLogin }) {
   const [password, setPassword] = useState('');
@@ -74,7 +73,7 @@ function Login({ onLogin }) {
   );
 }
 
-function App({ session }) {
+function App() {
   async function logout() {
     await supabase.auth.signOut();
   }
@@ -114,7 +113,7 @@ function Root() {
   }, []);
 
   if (!ready) return <div className="loading">Loading…</div>;
-  return session ? <App session={session} /> : <Login onLogin={setSession} />;
+  return session ? <App /> : <Login onLogin={setSession} />;
 }
 
 createRoot(document.getElementById('root')).render(
