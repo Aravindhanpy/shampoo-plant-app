@@ -9,8 +9,11 @@ const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
+// Operators use one shared password. The email is only an internal Supabase Auth
+// identity and is never shown to operators.
+const SHARED_OPERATOR_EMAIL = 'operator@shampoo-plant.local';
+
 function Login({ onLogin }) {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,23 +23,23 @@ function Login({ onLogin }) {
     setError('');
 
     if (!supabase) {
-      setError('Supabase is not configured. Please check the app environment settings.');
+      setError('The app is not configured correctly. Please contact the supervisor.');
       return;
     }
-    if (!email.trim() || !password) {
-      setError('Please enter your email and password.');
+    if (!password) {
+      setError('Please enter the access password.');
       return;
     }
 
     setLoading(true);
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: SHARED_OPERATOR_EMAIL,
       password,
     });
     setLoading(false);
 
     if (signInError) {
-      setError('Email or password is incorrect. Please try again.');
+      setError('Incorrect access password. Please try again.');
       return;
     }
     onLogin(data.session);
@@ -46,31 +49,24 @@ function Login({ onLogin }) {
     <main className="page-center">
       <section className="card login-card">
         <div className="brand">SHAMPOO PLANT</div>
-        <h1>Sign in</h1>
-        <p className="muted">Enter your account details to continue.</p>
+        <h1>Plant Access</h1>
+        <p className="muted">Enter the shared access password to continue.</p>
         <form onSubmit={handleSubmit} noValidate>
-          <label>Email</label>
+          <label htmlFor="access-password">Access password</label>
           <input
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-          />
-
-          <label>Password</label>
-          <input
+            id="access-password"
             type="password"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
+            placeholder="Enter password"
+            autoFocus
           />
 
           {error && <div className="error" role="alert">{error}</div>}
 
           <button type="submit" disabled={loading}>
-            {loading ? 'Signing in…' : 'LOGIN'}
+            {loading ? 'Checking…' : 'ENTER'}
           </button>
         </form>
       </section>
@@ -88,7 +84,7 @@ function App({ session }) {
       <section className="card">
         <div className="brand">SHAMPOO PLANT</div>
         <h1>Welcome</h1>
-        <p className="muted">Signed in as {session.user.email}</p>
+        <p className="muted">Plant access is active.</p>
         <button onClick={logout}>LOG OUT</button>
       </section>
     </main>
