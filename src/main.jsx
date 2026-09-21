@@ -2,6 +2,8 @@ import React,{useEffect,useMemo,useState}from'react';
 import{createRoot}from'react-dom/client';
 import{createClient}from'@supabase/supabase-js';
 import'./styles.css';
+
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 const url=import.meta.env.VITE_SUPABASE_URL,key=import.meta.env.VITE_SUPABASE_ANON_KEY,supabase=url&&key?createClient(url,key):null;
 const EMAIL='aravindhan090804@gmail.com';
 const UNITS=Array.from({length:17},(_,i)=>({id:i+1,machine_no:`M-${String(i+1).padStart(2,'0')}`}));
